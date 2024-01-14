@@ -20,10 +20,10 @@ the list contains the estimated value of beta,the matrix of the beta under every
 Compute the optimal estimates of beta by minimize the loss function with l2 penalty through CG method
 }
 \examples{
-seef_num = 123
+seed_num = 123
 n = 100
 p = 2
 simudata = getData(seed_num,n,p)
 result = RidgeRegression_CG(simudata$X,simudata$y,lambda = 0.1,max_iteration = 1000)
-result.betaHat
+result$betaHat
 }
