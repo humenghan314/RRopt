@@ -162,12 +162,12 @@ public:
 //'@max_iteration the maximum number of iterations
 //'@return the list contains the estimated value of beta,the matrix of the beta under every iteration,the iterations number,the final loss
 //'@examples
-//'seef_num = 123
+//'seed_num = 123
 //'n = 100
-//'p = 2
+//'p = 2d
 //'simudata = getData(seed_num,n,p)
 //'result = RidgeRegression_CG(simudata$X,simudata$y,lambda = 0.1,max_iteration = 1000)
-//'result.betaHat
+//'result$betaHat
 // [[Rcpp::export]]
 Rcpp::List RidgeRegression_CG(arma::mat X,arma::vec y,double lambda,double t=0.1,double eps=1e-5,int max_iteration=1000){
   CG CG_solver(X,y,lambda,t,eps,max_iteration);
