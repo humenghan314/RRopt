@@ -12,15 +12,15 @@ namespace my_lbfgs{
 // 优化超参数
 struct lbfgs_parameter_t{
   int mem_size = 8; // 限制内存大小
-  double g_epsilon = 1.0e-5; // 梯度收敛
+  double g_epsilon = 1.0e-5; // 梯度收敛阈值
   int past = 3; // 收敛测试的距离
   double delta = 1.0e-6; // 收敛测试的超参数
   int max_iterations = 0; // 最大迭代次数
   int max_linesearch = 64; // 线搜索最大次数
   double min_step = 1.0e-20; // 线搜索最小步长
   double max_step = 1.0e+20; // 线搜索最大步长
-  double f_dec_coeff = 1.0e-4;  // 线搜索的精度
-  double s_curv_coeff = 0.9; // 线搜索
+  double f_dec_coeff = 1.0e-4;  // Armijo阈值
+  double s_curv_coeff = 0.9; // weak wolfe阈值
   double cautious_factor = 1.0e-6; // 非凸优化全局收敛
   double machine_prec = 1.0e-16; // 机器精度
 };
@@ -128,7 +128,7 @@ inline int line_search_lewisoverton(arma::mat X, arma::vec y,
   double finit, dginit, dgtest, dstest;
   double mu = 0.0, nu = stpmax;
   
-  if (!(stp > 0.0)) // stp>0
+  if (!(stp > 0.0)) // step>0
   { return LBFGSERR_INVALIDPARAMETERS;}
   
   dginit = arma::dot(gp, s); // 线搜索的初始梯度
@@ -311,11 +311,7 @@ inline int lbfgs_optimize(arma::mat X,arma::vec y, arma::vec &x,
         }
       
       // 收敛测试
-      // ||g(x)||_inf / max(1, ||x||_inf) < g_epsilon
-       
-      // arma::vec g_abs = arma::abs(g);
       gnorm_inf = arma::max(arma::abs(g));
-      // arma::vec x_abs = arma::abs(x);
       xnorm_inf = arma::max(arma::abs(x));
       if (gnorm_inf / std::max(1.0, xnorm_inf) < param.g_epsilon){
         // 收敛
@@ -324,12 +320,8 @@ inline int lbfgs_optimize(arma::mat X,arma::vec y, arma::vec &x,
       }
       
       // 停止准则
-      // The criterion is given by the following formula:
-      // |f(past_x) - f(x)| / max(1, |f(x)|) < \delta.
-      
       if (param.past>0){
         if (param.past <= k){
-          /* The stopping criterion. */
           rate = std::fabs(pf(k % param.past) - fx) / std::max(1.0, std::fabs(fx));
           
           if (rate < param.delta){

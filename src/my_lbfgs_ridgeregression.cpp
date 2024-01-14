@@ -28,11 +28,11 @@ private:
   const double lambda; 
   
   // 优化超参数
-  int mem_size = 8; // 限制内存大小
-  double g_epsilon = 1.0e-5; // 梯度收敛
-  int past = 3; // 收敛迭代次数
-  double delta = 1.0e-6; // 收敛测试
-  int max_iterations = 0; // 最大迭代次数
+  int mem_size; // 限制内存大小
+  double g_epsilon; // 梯度收敛
+  int past; // 收敛迭代次数
+  double delta; // 收敛测试
+  int max_iterations; // 最大迭代次数
   
   
 public:
@@ -133,7 +133,7 @@ public:
 //' @return Estimated value of targetValues, beta(last and historical), iterations and loss
 // [[Rcpp::export]]
 Rcpp::List RidgeRegression_LBFGS(arma::mat X, arma::vec y, double lambda, int mem_size=8, 
-                           int max_iterations=64, double g_epsilon=1.0e-5, int past=3, double delta=1.0e-6){
+                           int max_iterations=36, double g_epsilon=1.0e-5, int past=3, double delta=1.0e-6){
   
   L_BFGS lbfgs_solver(X, y, lambda, mem_size, max_iterations, g_epsilon, past, delta);
   int iter_num = 0;
